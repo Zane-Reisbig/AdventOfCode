@@ -1,3 +1,32 @@
+class FileLoader:
+  mainFile = None
+  testFile = None
+  subDirAppend = None
+  
+  def __init__(self, main=None, test=None, appendCWD=False, subDirAppend=""):
+    self.subDirAppend = subDirAppend
+    
+    if main == None: 
+      self.mainFile = self.openFile("input.txt", True)
+    else:
+      self.mainFile = self.openFile(main, appendCWD)
+      
+    if test == None:
+      self.testFile = self.openFile("test_input.txt", True)
+    else:
+      self.testFile = self.openFile(test, appendCWD)
+  
+  def openFile(self, fileName, appendCWD):
+    if appendCWD:
+      import os
+      with open(f"{os.getcwd()}\\{self.subDirAppend}\\{fileName}", 'r') as f:
+        return f.readlines()
+
+    else:
+      with open(f"{fileName}", 'r') as f:
+        return f.readlines()
+
+
 class Line:
   lookUp = {
     "one": "1",
@@ -36,7 +65,7 @@ class Line:
     # same ^
     final = ""
 
-    for char, index in enumerate(line):
+    for index, char in enumerate(line):
       # if it is a decimal, great! thats it!
       if char.isdecimal():
         first = int(char) if first == "" else first
@@ -62,21 +91,26 @@ class Line:
 def main():
   isDev = False
 
+  # if isDev:
+  #   with open(r"C:\Users\zaned\Desktop\Non-Education\_Code\AdventOfCode\Day1\test_input.txt", 'r') as f:
+  #     puzzleInput = f.readlines();
+  # else:
+  #   with open(r"C:\Users\zaned\Desktop\Non-Education\_Code\AdventOfCode\Day1\input.txt", 'r') as f:
+  #     puzzleInput = f.readlines();
+
   puzzleInput = None
+  input = FileLoader(subDirAppend="Day1")
   if isDev:
-    with open(r"C:\Users\zaned\Desktop\Non-Education\_Code\AdventOfCode\Day1\test_input.txt", 'r') as f:
-      puzzleInput = f.readlines();
+    puzzleInput = input.testFile
   else:
-    with open(r"C:\Users\zaned\Desktop\Non-Education\_Code\AdventOfCode\Day1\input.txt", 'r') as f:
-      puzzleInput = f.readlines();
+    puzzleInput = input.mainFile
+    
 
   ptOne = part_one_solver(puzzleInput)
   print(ptOne)
-  print()
 
   ptTwo = part_two_solver(puzzleInput)
   print(ptTwo)
-  print()
     
 def part_one_solver(input):
   # Do NOT Parse written numbers
