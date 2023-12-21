@@ -55,6 +55,7 @@ class Line:
             first = self.lookUp[number] if first == "" else first
             final = self.lookUp[number]
 
+    # poor mans return statement
     self.firstNumber = first
     self.secondNumber = final
 
