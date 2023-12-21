@@ -33,6 +33,8 @@ class DiceBag:
   def __init__(self, inputString):
     self.dice = []
     self.gameId = None
+
+    # Me when people say day 2 is a regex challenge 
     self.tokens = inputString.split(":")
     self.gameId = int(self.tokens[0][len("Game "):])
 
@@ -40,14 +42,20 @@ class DiceBag:
     self.highGreen = 0
     self.highBlue  = 0
     
+    # Honestly I really couldn't figure out how to do 
+    # int.max cuz it doesn't just work :shrug:
     self.lowRed   = 999
     self.lowGreen = 999
     self.lowBlue  = 999
 
     self.currentHandRole = {}
+    # Me when people say day is something...something see above 
     self.brokenDownRolls = [self.rolls.strip().split(", ") for self.rolls in self.tokens[1].split(";")]
     for self.item in self.brokenDownRolls:
       for self.roll in self.item:
+        # After breaking down the string we are left with a grand total to turn into an object
+        # - {color: amount}, makes it real easy to mess around with later if they aren't just
+        # - floating around in here somewhere
         self.currentHandRole.update({self.roll.split(" ")[1]: int(self.roll.split(" ")[0])})
 
       self.dice.append(self.currentHandRole)
@@ -56,6 +64,7 @@ class DiceBag:
     
     for self.item in self.dice:
       if 'red' in self.item:
+        # Check if high and low is set and change accordingly
         self.highRed = self.item['red'] if self.item['red'] > self.highRed else self.highRed
         self.lowRed = self.item['red'] if self.item['red'] < self.lowRed else self.lowRed
 
@@ -88,12 +97,15 @@ def part_one(input):
   for line in input:
     games.append(DiceBag(line))
 
+  # Our puzzle input source of truth
   SOT = {'red': 12, 'green': 13, 'blue': 14}
   qualifiedGames = []
 
   isQualifiedGame = True
   item: DiceBag
   for item in games:
+    # Check if SOT is more than what we got
+    # if so it aint our game
     if item.highRed > SOT['red']:
       isQualifiedGame = False
     
@@ -104,6 +116,7 @@ def part_one(input):
       isQualifiedGame = False
     
     if isQualifiedGame:
+      # if passed with flying colors let get that bread
       qualifiedGames.append(item.gameId)
     
     isQualifiedGame = True
@@ -113,11 +126,13 @@ def part_one(input):
 def part_two(input):
   outTotal = []
   for line in input:
+    # Same as before
     outTotal.append(DiceBag(line))
 
   powerTotal = []
   item: DiceBag
   for item in outTotal:
+    # We already did the hard part, just do a little loopin
     powerTotal.append(item.highBlue * item.highGreen * item.highRed)
   
   return sum(powerTotal)
