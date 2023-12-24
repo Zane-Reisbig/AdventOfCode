@@ -25,6 +25,14 @@ class FileLoader:
       with open(f"{fileName}", 'r') as f:
         return f.read()
 
+class PartInformation:
+  def __init__(self, char):
+    self.symbolChar = char
+    self.partNumbers = []
+  
+  def appendPartNumber(self, partNumber):
+    self.partNumbers.append(partNumber)
+
 
 class EngineSchematic:
   symbolList = [
@@ -36,27 +44,16 @@ class EngineSchematic:
   def __init__(self, schematic):
     self.schematic = schematic
     self.splitSchematic = schematic.split("\n")
+    self.schematicHeaderSize = len(self.splitSchematic[0])
     self.partNumbers = []
     self.partNumbers.append(self.findAdjacentNumbers())
+    self.partInfomation:list[PartInformation] = []
 
   
   def findAdjacentNumbers(self):
     for i, item in enumerate(self.schematic):
       if item in self.symbolList:
-        for ii, returnList in enumerate(self.getAllAdjacentNumbers(i)):
-          for item in returnList:
-            if item.isdecimal():
-              self.getAllNumbersTillSymbol(ii)
-  
-  
-  def getAllNumbersTillSymbol(self, positionRelativeToBase):
-    # 0 = above / +
-    # 1 = same  / +1 | -1
-    # 2 = below / -
-
-
-
-    pass
+        print(self.getAllAdjacentNumbers(i))
     
 
   def getAllAdjacentNumbers(self, startIndex):
@@ -66,22 +63,67 @@ class EngineSchematic:
     # [1, 2, 3]
     # [4, 0, 5]
     # [6, 7, 8]
-    i_1 = self.schematic[startIndex - (lineLength + 2)]
-    i_2 = self.schematic[startIndex - (lineLength + 1)]
-    i_3 = self.schematic[startIndex - (lineLength)]
+    adj = []
+    hold = None
     
-    i_4 = self.schematic[startIndex - 1]
-    i_5 = self.schematic[startIndex + 1]
-    
-    i_6 = self.schematic[startIndex + (lineLength + 2)]
-    i_7 = self.schematic[startIndex + (lineLength + 1)]
-    i_8 = self.schematic[startIndex + (lineLength)]
+    if (hold:=self.schematic[startIndex - (lineLength + 2)]).isdecimal():
+      adj.append(self._digitHunter(startIndex - (lineLength + 2)))
 
-    return [
-      [i_1, i_2, i_3],
-      [i_4, '0', i_5],
-      [i_6, i_7, i_8],
-    ]
+    if (hold:=self.schematic[startIndex - (lineLength + 1)]).isdecimal():
+      adj.append(self._digitHunter(startIndex - (lineLength + 1)))
+
+    if (hold:=self.schematic[startIndex - (lineLength)]).isdecimal():
+      adj.append(self._digitHunter(startIndex - (lineLength)))
+
+    if (hold:=self.schematic[startIndex - 1]).isdecimal():
+      adj.append(self._digitHunter(startIndex - 1))
+
+    if (hold:=self.schematic[startIndex + 1]).isdecimal():
+      adj.append(self._digitHunter(startIndex + 1))
+
+    if (hold:=self.schematic[startIndex + (lineLength + 2)]).isdecimal():
+      adj.append(self._digitHunter(startIndex + (lineLength + 2)))
+
+    if (hold:=self.schematic[startIndex + (lineLength + 1)]).isdecimal():
+      adj.append(self._digitHunter(startIndex + (lineLength + 1)))
+
+    if (hold:=self.schematic[startIndex + (lineLength)]).isdecimal():
+      adj.append(self._digitHunter(startIndex + (lineLength)))
+
+    return adj    
+
+  def _digitHunter(self, startIndex):
+    builtDigit = ""
+
+    currentChar = ""
+    iterator = 0
+    while currentChar not in self.symbolList and currentChar != ".":
+      builtDigit += currentChar
+      currentChar = self.schematic[startIndex + iterator]
+      
+      iterator += 1
+    
+    currentChar = ""
+    iterator = 0
+    while currentChar not in self.symbolList and currentChar != ".":
+      if iterator != 0:
+        builtDigit = currentChar + builtDigit
+        currentChar = self.schematic[startIndex + iterator]
+        
+      iterator -= 1
+      
+    return int(builtDigit)
+      
+    
+  def _0(self):
+    """
+    If a bitshift occurs this will be called
+    """
+    print("THE HUMANITY, THE SOLAR FLARES, THE DOWNRIGHT ABSURTITY OF IT ALL")
+    print("the opps")
+
+    return "the opps"
+    
     
 
 def main():
